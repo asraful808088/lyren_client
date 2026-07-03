@@ -1,0 +1,90 @@
+product 
+
+    id
+    name 
+    count
+    mini des
+    des
+    Care Details
+    price
+    discont
+    injector_user
+    create_time
+    update_time
+
+
+
+
+product_category
+        id
+        product_id
+        type
+        create_time
+        update_time
+
+
+product_collection
+        id
+        product_id
+        collection
+        create_time
+        update_time
+
+
+product_color
+        id
+        product_id
+        color_name
+        color_code
+        create_time
+        update_time
+
+product_size
+        id
+        product_id
+        size
+        create_time
+        update_time
+
+
+
+images
+    id
+    product_id
+    image
+    type
+    create_time
+    update_time
+
+
+
+
+
+review 
+    id
+    product_id
+    username
+    rating 
+    commment
+    react
+    create_time
+    update_time
+
+
+
+
+
+
+
+
+
+
+
+userDB
+    name
+    email
+    password
+    isStaff
+    isAdmin
+    create_time
+    update_time
