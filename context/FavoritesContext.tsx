@@ -7,10 +7,11 @@ export interface FavoriteItem {
   name: string;
   price: number;
   image: string;
+  discountPrice?: number;
 }
 
 interface StoredFavoriteItem extends FavoriteItem {
-  addedAt: number; // timestamp (ms) when the item was favorited
+  addedAt: number; 
 }
 
 interface FavoritesContextType {
