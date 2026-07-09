@@ -1,3 +1,5 @@
+https://res.cloudinary.com/ecxs6pgw/image/upload/v1783354359/logo_acvlmj.png
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -10,6 +12,7 @@ import { paymentService } from '@/services/paymentService';
 import Image from 'next/image';
 
 type Step = 'summary' | 'platform' | 'credentials' | 'processing' | 'result';
+type Platform = 'nextrade' | 'paypal' | null;
 
 export default function CheckoutPage() {
     const { cart, clearCart } = useCart();
@@ -17,6 +20,7 @@ export default function CheckoutPage() {
     const { user, isLoading } = useAuth();
 
     const [step, setStep] = useState<Step>('summary');
+    const [selectedPlatform, setSelectedPlatform] = useState<Platform>(null);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [result, setResult] = useState<'success' | 'failure' | null>(null);
@@ -47,7 +51,7 @@ export default function CheckoutPage() {
                 email: email,
                 password: password,
                 amount: total,
-                platform: 'nextrade'
+                platform: selectedPlatform || 'nextrade'
             };
 
             const response = await paymentService.processPayment(paymentData);
@@ -67,6 +71,11 @@ export default function CheckoutPage() {
             setIsProcessing(false);
             setStep('result');
         }
+    };
+
+    const handlePlatformSelect = (platform: Platform) => {
+        setSelectedPlatform(platform);
+        setStep('credentials');
     };
 
     // Block rendering while auth is resolving or user is about to be redirected
@@ -152,46 +161,72 @@ export default function CheckoutPage() {
                             Choose Payment Method
                         </h1>
 
-                        <button
-                            onClick={() => setStep('credentials')}
-                            className="w-full flex items-center gap-4 border border-white/10 bg-[#151515] p-5 hover:border-[#d4af37]/50 transition-colors group"
-                        >
-                            <div className="w-12 h-12 relative shrink-0">
-                                <Image
-                                    src="https://res.cloudinary.com/none909099/image/upload/v1781595618/Group_12_de6nlw.png"
-                                    alt="NexTrade"
-                                    fill
-                                    sizes="48px"
-                                    className="object-contain rounded-sm"
-                                />
-                            </div>
-                            <div className="text-left">
-                                <div className="text-xs uppercase tracking-widest">NexTrade</div>
-                                <div className="text-[10px] opacity-50 mt-1">Pay securely with NexTrade</div>
-                            </div>
-                        </button>
+                        <div className="space-y-4">
+                            {/* NexTrade Option */}
+                            <button
+                                onClick={() => handlePlatformSelect('nextrade')}
+                                className="w-full flex items-center gap-4 border border-white/10 bg-[#151515] p-5 hover:border-[#d4af37]/50 transition-colors group"
+                            >
+                                <div className="w-12 h-12 relative shrink-0">
+                                    <Image
+                                        src="https://res.cloudinary.com/none909099/image/upload/v1781595618/Group_12_de6nlw.png"
+                                        alt="NexTrade"
+                                        fill
+                                        sizes="48px"
+                                        className="object-contain rounded-sm"
+                                    />
+                                </div>
+                                <div className="text-left">
+                                    <div className="text-xs uppercase tracking-widest">NexTrade</div>
+                                    <div className="text-[10px] opacity-50 mt-1">Pay securely with NexTrade</div>
+                                </div>
+                            </button>
+
+                            {/* PayPal Option */}
+                            <button
+                                onClick={() => handlePlatformSelect('paypal')}
+                                className="w-full flex items-center gap-4 border border-white/10 bg-[#151515] p-5 hover:border-[#d4af37]/50 transition-colors group"
+                            >
+                                <div className="w-12 h-12 relative shrink-0">
+                                    <Image
+                                        src="https://res.cloudinary.com/ecxs6pgw/image/upload/v1783354359/logo_acvlmj.png"
+                                        alt="PayPal"
+                                        fill
+                                        sizes="48px"
+                                        className="object-contain rounded-sm"
+                                    />
+                                </div>
+                                <div className="text-left">
+                                    <div className="text-xs uppercase tracking-widest">PayPal</div>
+                                    <div className="text-[10px] opacity-50 mt-1">Pay with PayPal</div>
+                                </div>
+                            </button>
+                        </div>
 
                         <p className="text-[10px] opacity-40 mt-6 leading-relaxed">
-                            Secure payment powered by NexTrade.
+                            Secure payment powered by our trusted partners.
                         </p>
                     </div>
                 )}
 
-                {/* STEP 3 — NexTrade Credentials */}
+                {/* STEP 3 — Credentials */}
                 {step === 'credentials' && (
                     <form onSubmit={(e) => { e.preventDefault(); handlePay(); }}>
                         <div className="flex items-center gap-3 mb-8">
                             <div className="w-10 h-10 relative">
                                 <Image
-                                    src="https://res.cloudinary.com/none909099/image/upload/v1781595618/Group_12_de6nlw.png"
-                                    alt="NexTrade"
+                                    src={selectedPlatform === 'nextrade' 
+                                        ? "https://res.cloudinary.com/none909099/image/upload/v1781595618/Group_12_de6nlw.png"
+                                        : "https://res.cloudinary.com/ecxs6pgw/image/upload/v1783354359/logo_acvlmj.png"
+                                    }
+                                    alt={selectedPlatform || 'Payment'}
                                     fill
                                     sizes="40px"
                                     className="object-contain"
                                 />
                             </div>
                             <h1 className="text-sm uppercase tracking-widest text-[#d4af37]">
-                                NexTrade Payment
+                                {selectedPlatform === 'nextrade' ? 'NexTrade' : 'PayPal'} Payment
                             </h1>
                         </div>
 
@@ -250,7 +285,7 @@ export default function CheckoutPage() {
                                 </>
                             ) : (
                                 <>
-                                    <Lock size={12} /> Pay ${total.toFixed(2)}
+                                    <Lock size={12} /> Pay ${total.toFixed(2)} with {selectedPlatform === 'nextrade' ? 'NexTrade' : 'PayPal'}
                                 </>
                             )}
                         </button>
@@ -265,7 +300,7 @@ export default function CheckoutPage() {
                             Processing Payment
                         </div>
                         <div className="text-[10px] opacity-40 mt-2">
-                            Please wait while we process your payment...
+                            Please wait while we process your payment through {selectedPlatform === 'nextrade' ? 'NexTrade' : 'PayPal'}...
                         </div>
                     </div>
                 )}
