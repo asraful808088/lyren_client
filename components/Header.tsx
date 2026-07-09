@@ -37,6 +37,15 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  // Close menu on Escape key for accessibility
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setUserMenuOpen(false);
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, []);
+
   return (
     <>
       <header className="py-4 md:py-6 border-b border-white/10 bg-[#0a0a0a]">
@@ -91,63 +100,72 @@ export default function Header() {
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setUserMenuOpen((v) => !v)}
-                  className="flex items-center gap-1.5 hover:text-white transition group p-1.5 md:p-0"
+                  className="flex items-center gap-2 hover:text-white transition group p-1.5 md:p-0"
                   aria-label="User menu"
+                  aria-expanded={userMenuOpen}
                 >
-                  <span className="w-5 md:w-6 h-5 md:h-6 rounded-full bg-[#d4af37]/20 border border-[#d4af37]/40 flex items-center justify-center text-[9px] md:text-[10px] font-semibold text-[#d4af37] uppercase">
+                  <span className="w-7 md:w-8 h-7 md:h-8 rounded-full bg-gradient-to-br from-[#d4af37]/30 to-[#d4af37]/10 border border-[#d4af37]/40 flex items-center justify-center text-[10px] md:text-[11px] font-serif italic text-[#d4af37] uppercase transition-transform duration-200 group-hover:scale-105">
                     {user.name.charAt(0)}
                   </span>
                   <ChevronDown
                     size={11}
-                    className={`hidden md:block transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`}
+                    className={`hidden md:block text-gray-500 group-hover:text-white transition-transform duration-300 ${
+                      userMenuOpen ? 'rotate-180 text-[#d4af37]' : ''
+                    }`}
                   />
                 </button>
 
-                {userMenuOpen && (
-                  <div className="absolute right-0 top-full mt-3 w-48 md:w-52 bg-[#0f0f0f] border border-white/10 shadow-2xl z-30">
-                    <div className="px-4 py-3 border-b border-white/8">
-                      <p className="text-[10px] md:text-[11px] text-white tracking-wide font-medium truncate">
-                        {user.name}
-                      </p>
-                      <p className="text-[9px] md:text-[10px] text-gray-600 truncate mt-0.5">{user.email}</p>
-                    </div>
-
-                    <div className="py-1">
-                      <Link
-                        href="#"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="block px-4 py-2.5 text-[10px] md:text-[11px] tracking-[0.15em] uppercase text-gray-400 hover:text-white hover:bg-white/[0.03] transition"
-                      >
-                        My Account
-                      </Link>
-                      <Link
-                        href="#"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="block px-4 py-2.5 text-[10px] md:text-[11px] tracking-[0.15em] uppercase text-gray-400 hover:text-white hover:bg-white/[0.03] transition"
-                      >
-                        Orders
-                      </Link>
-                    </div>
-
-                    <div className="border-t border-white/8 py-1">
-                      <button
-                        onClick={() => {
-                          logout();
-                          setUserMenuOpen(false);
-                        }}
-                        className="w-full flex items-center gap-2 px-4 py-2.5 text-[10px] md:text-[11px] tracking-[0.15em] uppercase text-gray-600 hover:text-red-400 hover:bg-white/[0.02] transition"
-                      >
-                        <LogOut size={12} />
-                        Sign out
-                      </button>
-                    </div>
+                <div
+                  className={`absolute right-0 top-full mt-3 w-52 md:w-56 bg-[#0f0f0f] border border-white/10 shadow-2xl shadow-black/50 z-30 origin-top-right transition-all duration-200 ${
+                    userMenuOpen
+                      ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 scale-95 -translate-y-1 pointer-events-none'
+                  }`}
+                >
+                  <div className="px-4 py-4 border-b border-white/8">
+                    <p className="text-[10px] md:text-[11px] text-white tracking-wide font-medium truncate">
+                      {user.name}
+                    </p>
+                    <p className="text-[9px] md:text-[10px] text-gray-600 truncate mt-1">{user.email}</p>
                   </div>
-                )}
+
+                  <div className="py-1">
+                    <Link
+                      href="#"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-[10px] md:text-[11px] tracking-[0.15em] uppercase text-gray-400 hover:text-[#d4af37] hover:bg-white/[0.03] transition-colors"
+                    >
+                      <User size={12} />
+                      My Account
+                    </Link>
+                    <Link
+                      href="#"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-[10px] md:text-[11px] tracking-[0.15em] uppercase text-gray-400 hover:text-[#d4af37] hover:bg-white/[0.03] transition-colors"
+                    >
+                      <ShoppingBag size={12} />
+                      Orders
+                    </Link>
+                  </div>
+
+                  <div className="border-t border-white/8 py-1">
+                    <button
+                      onClick={() => {
+                        logout();
+                        setUserMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-[10px] md:text-[11px] tracking-[0.15em] uppercase text-gray-600 hover:text-red-400 hover:bg-white/[0.02] transition-colors"
+                    >
+                      <LogOut size={12} />
+                      Sign out
+                    </button>
+                  </div>
+                </div>
               </div>
             ) : (
               <button
                 onClick={() => setIsLoginOpen(true)}
-                className="hover:text-white transition p-1.5 md:p-0"
+                className="hover:text-[#d4af37] transition p-1.5 md:p-0"
                 aria-label="Sign in"
               >
                 <User size={16} />
