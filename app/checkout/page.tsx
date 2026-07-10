@@ -10,6 +10,7 @@ import { paymentService } from '@/services/paymentService';
 import { ChainHookLoadingOverlay } from '@/components/ChainHookLoadingOverlay';
 import Image from 'next/image';
 
+
 type Step = 'summary' | 'platform' | 'credentials' | 'processing' | 'result';
 
 export default function CheckoutPage() {
